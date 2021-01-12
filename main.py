@@ -4,7 +4,7 @@ import numpy as np
 im = cv2.imread("34142.jpg")
 img = cv2.imread("34142.jpg", 0)
 img = img[0:883, 0:1024]
-#172 pixel = 1 makrometer
+#172 pixel = 1 mikrometer
 
 kernal = np.ones((5,5), np.uint8)
 img = cv2.dilate(img, kernal)
