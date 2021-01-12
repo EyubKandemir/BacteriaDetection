@@ -18,12 +18,9 @@ kernal = np.ones((1,2),np.uint8)
 dilation = cv2.dilate(th2,kernal,iterations=1)
 erosion =cv2.erode(dilation,kernal,iterations=1)
 opening = cv2.morphologyEx(th2,cv2.MORPH_OPEN,kernal,)
-img2, contour= cv2.findContours(th2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
-
 
 titles=["contour","Original","erosion","dilation","Bınary Inv.","opening","Binary","Trunc","To_zero","To_zero_Inv" ]
-images = [contour, img,erosion,dilation,th2,opening,th1,th3,th4,th5]
+images = [img,erosion,dilation,th2,opening,th1,th3,th4,th5]
 
 for i in range(8):
     plt.subplot(3,3,i+1), plt.imshow(images[i],'gray')
@@ -40,9 +37,8 @@ cv2.imshow("dilation",dilation)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 """
-plt.show()
-
-cv2.drawContours(img2,contour,-1,(0,255,0),3)
+#plt.show()
+cv2.imshow("dilation",dilation)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

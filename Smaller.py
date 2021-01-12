@@ -1,46 +1,48 @@
-import argparse
 import cv2
 import numpy as np
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-i","--image",required=True,help="path to the input image")
-ap.add_argument("-o","--output",required=True,help="path to the output image")
-args = vars(ap.parse_args())
+im = cv2.imread("34142.jpg")
+img = cv2.imread("34142.jpg", 0)
+img = img[0:883, 0:1024]
 
-counter = {}
+kernal = np.ones((2,2), np.uint8)
+#kernal = np.ones((5,5),np.float32)/25
+img = cv2.dilate(img, kernal,iterations=2)
 
-image_orig = cv2.imread('34142.jpg')
-image_orig = image_orig[0:883, 0:1024]
-
-height_orig,weight_orig = image_orig.shape[:2]
-
-image_contours = image_orig.copy()
-
-colors=['black']
-
-image_to_process = image_orig.copy()
-
-counter = 0
-
-lower = np.array([75,25,25])
-upper = np.array([95,45,45])
-
-image_mask = cv2.inRange(image_to_process,lower,upper)
-image_res = cv2.bitwise_and(image_to_process,image_to_process,mask=image_mask)
-
-image_gray = cv2.cvtColor(image_res,cv2.COLOR_BGR2GRAY)
-image_gray = cv2.GaussianBlur(image_gray,(5,5),0)
-
-image_edged = cv2.Canny(image_gray,50,100)
-image_edged = cv2.dilate(image_edged,None,iterations=1)
-image_edged = cv2.erode(image_edged,None,iterations=1)
-
-cnts = cv2.findContours(image_edged.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-
-cv2.drawContours(image_contours,cnts,-1,(0,255,0),1)
-
-cv2.imwrite(args["output"],image_contours)
+_,th1 = cv2.threshold(img,50,60,cv2.THRESH_BINARY)
+_,th2 = cv2.threshold(img,55,55,cv2.THRESH_BINARY_INV)
+_,th3 = cv2.threshold(img,150,255,cv2.THRESH_TRUNC)
+_,th4 = cv2.threshold(img,150,255,cv2.THRESH_TOZERO)
+_,th5 = cv2.threshold(img,150,255,cv2.THRESH_TOZERO_INV)
 
 
+contours, hierarchy = cv2.findContours(th2, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+print("Number of contours : ", str(len(contours)))
+
+canny = cv2.Canny(th2,100,200)
+
+
+cnt1 = contours[1]
+#cv2.drawContours(im, [cnt1], -1, (0, 255, 0), 2)
+print("Cnt 1 area : ", cv2.contourArea(cnt1))
+
+lastContours=[]
+
+for cnts in contours:
+    if(cv2.contourArea(cnts)>40 and cv2.contourArea(cnts)<500 ):
+        lastContours.append(cnts)
+
+print(str(len(lastContours)))
+cv2.drawContours(im, lastContours, -1, (0, 255, 0), 2)
+
+
+#cv2.imshow("THRESH_BINARY_INV",th2)
+#cv2.imshow("THRESH_TRUNC",th3)
+#cv2.imshow("THRESH_TOZERO",th4)
+#cv2.imshow("THRESH_TOZERO_INV",th5)
+
+
+cv2.imshow("orji",im)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
